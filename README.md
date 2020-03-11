@@ -2,7 +2,21 @@
 
 Two simple apps, one talks to other
 
-## build
+## Kubectl apply setup
+
+This is great for testing istio functionality like kiali graphs:
+
+```
+kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/backend/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/backend/service.yaml
+kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/frontend/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/frontend/service.yaml
+```
+
+
+## Local K3d setup
+
+### build
 
 in each dir: 
 
@@ -16,13 +30,13 @@ docker build -t cbron/multiappdemo-frontend:latest .
 docker push cbron/multiappdemo-frontend:latest
 ```
 
-## k3d
+### k3d
 
 ```bash
 k3d create -n multiappdemo --publish 8080:30080 --image rancher/k3s:v0.9.1
 ```
 
-## build
+### build
 
 In each dir:
 
@@ -31,7 +45,7 @@ kubectl apply -f service.yaml
 kubectl apply -f deployment.yaml
 ```
 
-## curl from host: 
+### curl from host: 
 
 ```bash
 curl -s 0.0.0.0:8080
