@@ -1,6 +1,6 @@
 # multiappdemo
 
-Two simple apps, one talks to other
+Two simple apps, one talks to other. One k8s svc and deployment for each. 
 
 ## Kubectl apply setup
 
@@ -36,13 +36,13 @@ docker push cbron/multiappdemo-frontend:latest
 k3d create -n multiappdemo --publish 8080:30080 --image rancher/k3s:v0.9.1
 ```
 
-### build
-
-In each dir:
+### deploy
 
 ```bash
-kubectl apply -f service.yaml
-kubectl apply -f deployment.yaml
+kubectl apply -f backend/service.yaml
+kubectl apply -f backend/deployment.yaml
+kubectl apply -f frontend/service.yaml
+kubectl apply -f frontend/deployment.yaml
 ```
 
 ### curl from host: 
