@@ -1,0 +1,114 @@
+# Note, this file may require changes depending on your Istio setup
+###
+# Setup primary gateway and VS going to frontend app, with a destination rule
+###
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: multiappdemo-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - multiappdemo-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    timeout: 5s
+    route:
+    - destination:
+        host: frontend-svc
+        port:
+          number: 8080
+---
+# Example destination rule for frontend
+# if you scale up frontend svc this should
+# route traffic to lower used pods
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: multiappdemo-dest-rule-frontend
+spec:
+  host: frontend-svc
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_CONN
+---
+##
+# Traffic shifting on backend
+##
+
+# Make a second v2 backend deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: backend
+        version: v2
+    spec:
+      containers:
+      - name: app
+        image: cbron/multiappdemo-backend:second # use alt image
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---
+# Now subset based on versions
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: multiappdemo-dest-rule-backend
+spec:
+  host: backend-svc
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
+# Finally, make a VS for backend that splits traffic weight
+# note this VS doesn't specify gateway, but does specify host
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: backend-vs
+spec:
+  hosts:
+    - backend-svc
+  http:
+  - route:
+    - destination:
+        host: backend-svc
+        subset: v1
+      weight: 50
+    - destination:
+        host: backend-svc
+        subset: v2
+      weight: 50

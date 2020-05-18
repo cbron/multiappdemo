@@ -4,14 +4,32 @@ Two simple apps, one talks to other. One k8s svc and deployment for each.
 
 ## Kubectl apply setup
 
-This is great for testing istio functionality like kiali graphs:
+This is great for testing service-mesh functionality:
 
-```
+```bash
 kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/backend/deployment.yaml
 kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/backend/service.yaml
 kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/frontend/deployment.yaml
 kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/frontend/service.yaml
 ```
+
+
+## Service mesh specifics
+
+**Istio**
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/istio/istio.yaml
+```
+
+This creates a 2nd backend service and sets up istio resources. Use the bash script to call it;
+```bash
+./istio/callURL.sh
+```
+
+Produces the following:
+
+![Istio.png](istio/istio.png "Istio.png")
 
 
 ## Local K3d setup
