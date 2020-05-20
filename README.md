@@ -7,6 +7,12 @@ Two simple apps, one talks to other. One k8s svc and deployment for each.
 This is great for testing service-mesh functionality:
 
 ```bash
+kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/multiappdemo.yaml
+```
+
+or if you'd like to do each part separately:
+
+```bash
 kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/backend/deployment.yaml
 kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/backend/service.yaml
 kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/frontend/deployment.yaml
@@ -67,4 +73,11 @@ kubectl apply -f frontend/deployment.yaml
 
 ```bash
 curl -s 0.0.0.0:8080
+```
+
+
+## Kustomize
+
+```bash
+kubectl kustomize . > multiappdemo.yaml
 ```
