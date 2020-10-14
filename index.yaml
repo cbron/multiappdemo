@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  multiappdemo:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2020-10-14T14:34:10.724313-07:00"
+    description: A Helm chart for cbron/multiappdemo
+    digest: 474aca2314eb7d5f4082c8a9e491c46c25f7e9918d818295a42028a93e073ae7
+    name: multiappdemo
+    type: application
+    urls:
+    - multiappdemo-1.0.0.tgz
+    version: 1.0.0
+generated: "2020-10-14T14:34:10.72028-07:00"

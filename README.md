@@ -2,6 +2,8 @@
 
 Two simple apps, one talks to other. One k8s svc and deployment for each. 
 
+This is a simpler version of Istio's bookinfo app.
+
 ## Kubectl apply setup
 
 This is great for testing service-mesh functionality:
@@ -57,7 +59,8 @@ docker push cbron/multiappdemo-frontend:latest
 ### k3d
 
 ```bash
-k3d create -n multiappdemo --publish 8080:30080 --image rancher/k3s:v0.9.1
+k3d cluster create multiappdemo -p "8080:30080@agent[0]" --agents 1
+export KUBECONFIG="$(k3d kubeconfig write multiappdemo)"
 ```
 
 ### deploy
@@ -76,8 +79,17 @@ curl -s 0.0.0.0:8080
 ```
 
 
-## Kustomize
+### Alternatively deploy with helm
+
+```bash
+helm3 install multiappdemo ./chart/
+# or
+helm3 install multiappdemo ./multiappdemo-1.0.0.tgz
+```
+
+## Refreshing files with Kustomize
 
 ```bash
 kubectl kustomize . > multiappdemo.yaml
+kubectl kustomize . > chart/templates/multiappdemo.yaml
 ```
