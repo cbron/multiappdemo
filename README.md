@@ -22,6 +22,18 @@ kubectl apply -f https://raw.githubusercontent.com/cbron/multiappdemo/master/fro
 ```
 
 
+## Helm chart install
+
+```bash
+helm install multiappdemo ./chart/
+# or
+helm install multiappdemo ./multiappdemo-1.0.0.tgz
+# or 
+helm repo add mad https://raw.githubusercontent.com/cbron/multiappdemo/master
+helm3 install multiappdemo mad/multiappdemo
+```
+
+
 ## Service mesh specifics
 
 **Istio**
@@ -42,7 +54,7 @@ Produces the following:
 
 ## Local K3d setup
 
-### build
+#### build
 
 in each dir: 
 
@@ -56,35 +68,23 @@ docker build -t cbron/multiappdemo-frontend:latest .
 docker push cbron/multiappdemo-frontend:latest
 ```
 
-### k3d
+#### k3d
 
 ```bash
 k3d cluster create multiappdemo -p "8080:30080@agent[0]" --agents 1
 export KUBECONFIG="$(k3d kubeconfig write multiappdemo)"
 ```
 
-### deploy
+#### deploy
 
 ```bash
-kubectl apply -f backend/service.yaml
-kubectl apply -f backend/deployment.yaml
-kubectl apply -f frontend/service.yaml
-kubectl apply -f frontend/deployment.yaml
+kubectl apply -f multiappdemo.yaml
 ```
 
-### curl from host: 
+#### curl from host: 
 
 ```bash
 curl -s 0.0.0.0:8080
-```
-
-
-### Alternatively deploy with helm
-
-```bash
-helm3 install multiappdemo ./chart/
-# or
-helm3 install multiappdemo ./multiappdemo-1.0.0.tgz
 ```
 
 ## Refreshing files with Kustomize
