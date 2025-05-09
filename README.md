@@ -51,6 +51,17 @@ Produces the following:
 
 ![Istio.png](istio/istio.png "Istio.png")
 
+Ambient specific setup instructions:
+```
+istioctl install -f ./istio/istio-config.yaml --skip-confirmation
+kubectl get crd gateways.gateway.networking.k8s.io &> /dev/null || kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0-rc.1/standard-install.yaml
+istioctl waypoint apply -n default --enroll-namespace
+
+k label service backend-svc istio.io/use-waypoint=waypoint
+k label service frontend-svc istio.io/use-waypoint=waypoint
+k label gateway multiappdemo-gateway istio.io/use-waypoint=waypoint
+```
+If using kind you'll need to use the local load balancer, make sure to setup cloud-provider-kind binary and run it
 
 ## Local K3d setup
 

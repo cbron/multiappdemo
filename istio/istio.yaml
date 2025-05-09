@@ -2,7 +2,7 @@
 ###
 # Setup primary gateway and VS going to frontend app, with a destination rule
 ###
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1
 kind: Gateway
 metadata:
   name: multiappdemo-gateway
@@ -17,7 +17,7 @@ spec:
       hosts:
         - "*"
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: frontend-vs
@@ -33,14 +33,34 @@ spec:
     timeout: 5s
     route:
     - destination:
-        host: frontend-svc
+        host: frontend-svc ## this will traffic shift between both
         port:
           number: 8080
+  - match:
+    - uri:
+        exact: /one
+    timeout: 5s
+    route:
+    - destination:
+        host: backend-svc # this goes straight to backend #1
+        subset: v1
+        port:
+          number: 8081
+  - match:
+    - uri:
+        exact: /two
+    timeout: 5s
+    route:
+    - destination:
+        host: backend-svc # this goes straight to backend #2
+        subset: v2
+        port:
+          number: 8081
 ---
 # Example destination rule for frontend
 # if you scale up frontend svc this should
 # route traffic to lower used pods
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1
 kind: DestinationRule
 metadata:
   name: multiappdemo-dest-rule-frontend
@@ -79,7 +99,7 @@ spec:
         - containerPort: 8080
 ---
 # Now subset based on versions
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1
 kind: DestinationRule
 metadata:
   name: multiappdemo-dest-rule-backend
@@ -95,7 +115,7 @@ spec:
 ---
 # Finally, make a VS for backend that splits traffic weight
 # note this VS doesn't specify gateway, but does specify host
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: backend-vs
